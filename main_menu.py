@@ -14,7 +14,7 @@ Creation Date: 9/2/2025
 
 import pygame
 import sys
-import subprocess # to open MineSweeper.py and give it the mine count
+import subprocess # to open Minesweeper.py and give it the mine count
 
 pygame.init()
 
@@ -94,7 +94,7 @@ def main_menu(): # run main menu and handle events
                 elif start_button.collidepoint(event.pos):
                     # run MineSweeper.py and pass mine_count so it can be used there
                     pygame.quit()
-                    subprocess.run([sys.executable, "MineSweeper.py", str(mine_count)])
+                    subprocess.run([sys.executable, "Minesweeper.py", str(mine_count)])
                     sys.exit()
 
         draw_menu()
@@ -102,4 +102,3 @@ def main_menu(): # run main menu and handle events
 
 if __name__ == "__main__":
     main_menu()
-
