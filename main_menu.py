@@ -1,7 +1,15 @@
 '''
 A main menu for Minesweeper using Pygame.
 Allows player to select the number of mines (10-20) and start the game.
-Used Copilot to help spacing out the buttons.
+Inputs: player chosen number of mines.
+Outputs:
+    running the actual game with the grid
+    the number of mines will be sent to it.
+Sources:
+    Used Copilot to help spacing out the buttons.
+    Pygame event handling documentation used in main_menu(): https://www.pygame.org/docs/ref/event.html
+Author: Atharva Patil
+Creation Date: 9/2/2025
 '''
 
 import pygame
@@ -94,3 +102,4 @@ def main_menu(): # run main menu and handle events
 
 if __name__ == "__main__":
     main_menu()
+
