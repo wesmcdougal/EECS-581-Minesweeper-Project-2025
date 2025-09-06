@@ -97,7 +97,7 @@ def main_menu(): # run main menu and handle events
                     subprocess.run([sys.executable, "Minesweeper.py", str(mine_count)])
                     sys.exit()
 
-        draw_menu()
+        draw_menu()  
         clock.tick(30)
 
 if __name__ == "__main__":

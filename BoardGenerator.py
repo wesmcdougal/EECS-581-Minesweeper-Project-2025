@@ -29,8 +29,21 @@ def generate_numbering(grid):
     for i in range(len(grid)):
         for j in range(len(grid[i])):
             if grid[i][j] == 'b':
-                #check suroundings
-                pass
+                # Check all 8 surrounding cells
+                for di in [-1, 0, 1]:
+                    for dj in [-1, 0, 1]:
+                        # Skip the bomb cell itself
+                        if di == 0 and dj == 0:
+                            continue
+                        
+                        # Calculate adjacent cell coordinates
+                        ni, nj = i + di, j + dj
+                        
+                        # Check if coordinates are within grid bounds
+                        if 0 <= ni < len(grid) and 0 <= nj < len(grid[0]):
+                            # Only increment if the adjacent cell is not a bomb
+                            if grid[ni][nj] != 'b':
+                                grid[ni][nj] += 1
 
 
 def generate_statusGrid(grid):
@@ -38,4 +51,8 @@ def generate_statusGrid(grid):
 
 
 grid = generate_bombs(10)
+print("Grid with bombs:")
+print_grid(grid)
+generate_numbering(grid)
+print("\nGrid with numbering:")
 print_grid(grid)
