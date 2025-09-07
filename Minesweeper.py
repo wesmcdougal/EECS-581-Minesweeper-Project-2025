@@ -2,7 +2,9 @@
 # Pygames documentation - https://www.pygame.org/docs/
 #                         https://coderslegacy.com/python/python-pygame-tutorial/
 
-import pygame  # Imports pygame library
+import pygame           # Imports pygame library
+import sys              #Imports sys library
+import BoardGenerator   #Imports BoardGenerator
 pygame.init()  # Initializes all imported pygame modules
 
 # ---------- RGB variables ----------
@@ -16,7 +18,7 @@ grid_height = 10  # Number of grid rows (height)
 numMine = ""          # Number of mines (set later by user input)
 grid_size = 32        # Size of each grid square in pixels
 border = 16           # General border size (left, right, bottom)
-top_border = 100      # Top border size for menu/spacing
+top_border = 25      # Top border size for menu/spacing
 app_width = grid_size * grid_width + border * 2  # App window width in pixels
 app_height = grid_size * grid_height + border + top_border  # App window height in pixels
 
@@ -55,94 +57,105 @@ def drawText(txt, s, yOff=0):
                    grid_height * grid_size / 2 + top_border + yOff)
     gameDisplay.blit(screen_text, rect)  # Draws text to screen
 
-# ---------- Main Menu ----------
-def main_menu():
-    """
-    Displays the main menu where the player enters number of mines.
-    Returns True if valid input is entered (start game), otherwise False.
-    """
-    global numMine  # global variable numMine
-    grey = (48,49,52,255)
-    gameDisplay.fill(grey)
-    main_menu_bg = pygame.image.load("Sprites/main_menu_bg.png")  # Loads menu background image
-    input_box = pygame.Rect(app_width / 2 - 25, app_height / 2 - 100, 140, 32)  # Input box rectangle
-    color_inactive = pygame.Color('lightskyblue3')  # Color when input inactive
-    color_active = pygame.Color('dodgerblue2')      # Color when input active
-    color = color_inactive  # Start inactive
-    active = False          # Input box is initially inactive
-    mine_input_text = str(numMine)  # Input text string for number of mines
-    font = pygame.font.Font(None, 32)  # Font object for rendering input text
-    
-    # ----- Menu loop -----
-    menu_running = True
-    while menu_running:
-        for event in pygame.event.get():  # Process all events
-            if event.type == pygame.QUIT:  # If user closes window
-                pygame.quit()
-                quit()
-            if event.type == pygame.MOUSEBUTTONDOWN:  # If mouse is clicked
-                if input_box.collidepoint(event.pos):  # Check if click inside input box
-                    active = not active  # Toggle active state
-                else:
-                    active = False  # Otherwise deactivate state
-                color = color_active if active else color_inactive  # Changes box color
-            if event.type == pygame.KEYDOWN:  # If a key is pressed
-                if active:  # Only process input if input box is currently active
-                    if event.key == pygame.K_RETURN:  # Enter key pressed
-                        try:
-                            new_num_mines = int(mine_input_text)  # Converts input to integer
-                            if new_num_mines >= 1 and new_num_mines < 100:
-                                numMine = new_num_mines  # Save number of mines
-                                return True  # Exit menu and start game
-                            else:
-                                mine_input_text = ""  # Clear invalid input
-                        except ValueError:  # If input was not a number
-                            mine_input_text = ""  # Clear invalid input
-                    elif event.key == pygame.K_BACKSPACE:  # Backspace pressed
-                        mine_input_text = mine_input_text[:-1]  # Removes last character
-                    else:
-                        mine_input_text += event.unicode  # Append typed character to input
-        
-        # Scale the menu background image
-        menu_bg = pygame.transform.scale(main_menu_bg, (app_width - 50, app_height - 50))
-
-        # Get the rect of the scaled image
-        menu_bg_rect = menu_bg.get_rect()
-
-        # Center the rect on the screen
-        menu_bg_rect.center = (app_width // 2, app_height // 2)
-
-        # Draw the image at its centered position
-        gameDisplay.blit(menu_bg, menu_bg_rect)
-        
-        # Draw menu text
-        drawText("Minesweeper", 50, app_height / 10 - 250)  # Title text
-        drawText("Enter number of mines:", 30, app_height / 5 - 250)  # Instructions
-        
-        # Render the input box with current text
-        txt_surface = font.render(mine_input_text, True, white)  #input text
-        width = max(50, txt_surface.get_width())  #Adjust box width based on text length
-        input_box.w = width  #Update input box width
-        gameDisplay.blit(txt_surface, (input_box.x + 5, input_box.y + 5))  #Draw text inside box
-        pygame.draw.rect(gameDisplay, color, input_box, 2)  #Draw input box outline
-        pygame.display.update()  # Refresh screen
-    
-    return False  # If menu exits without valid input
-
-
 #Maybe add class object here for grid that draws grid and updates for every tile selected?
+class Grid:
+    def __init__(self, xGrid, yGrid, type):
+        self.xGrid = xGrid
+        self.yGrid = yGrid
+        self.clicked = False
+        self.mineClicked = False
+        self.mineFalse = False
+        self.flag = False
+        #Rect(left, top, width, height) -> Rect
+        self.rect = pygame.Rect(border + self.xGrid * grid_size,
+                                top_border + self.yGrid * grid_size,
+                                grid_size, grid_size)
+        self.val = type
+
+    #draws the sprites onto grid after every click/interaction update
+    def drawGrid(self):
+        if self.mineFalse:
+            gameDisplay.blit(sprite_mineFalse, self.rect)
+        else:
+            if self.clicked:
+                if self.val == "b":
+                    if self.mineClicked:
+                        gameDisplay.blit(sprite_mineClicked, self.rect)
+                    else:
+                        gameDisplay.blit(sprite_mine, self.rect)
+                else:
+                    if self.val == 0:
+                        gameDisplay.blit(sprite_emptyGrid, self.rect)
+                    elif self.val == 1:
+                        gameDisplay.blit(sprite_grid1, self.rect)
+                    elif self.val == 2:
+                        gameDisplay.blit(sprite_grid2, self.rect)
+                    elif self.val == 3:
+                        gameDisplay.blit(sprite_grid3, self.rect)
+                    elif self.val == 4:
+                        gameDisplay.blit(sprite_grid4, self.rect)
+                    elif self.val == 5:
+                        gameDisplay.blit(sprite_grid5, self.rect)
+                    elif self.val == 6:
+                        gameDisplay.blit(sprite_grid6, self.rect)
+                    elif self.val == 7:
+                        gameDisplay.blit(sprite_grid7, self.rect)
+                    elif self.val == 8:
+                        gameDisplay.blit(sprite_grid8, self.rect)
+            else:
+                if self.flag:
+                    gameDisplay.blit(sprite_flag, self.rect)
+                else:
+                    gameDisplay.blit(sprite_grid, self.rect)
 
 
 # ---------- Game loop (to be implemented) ----------
 bg_color = (192, 192, 192) # Background gray color
 grid_color = (128, 128, 128) # Grid line gray color
-def gameLoop():
-    pass
 
-# ---------- Program entry point ----------
-if main_menu():  # Start with main menu
-    print(f"gameloop start... \nNumber of Mines = {numMine}")  # Debug print to console
-    gameLoop()  # Call main game loop if valid input in main menu entered
+def gameLoop(grid, mines):
+    gameDisplay.fill((192, 192, 192))
+
+    # Draw grid
+    print("GameLoop grid")
+    for row in grid:
+        for cell in row:
+            cell.drawGrid()
+
+    pygame.display.update()
+    pygame.time.delay(5000) # pauses for 5 seconds before closing to prevent auto closing since its not in a loop 
+    pygame.quit()
+    quit()
+
+
+#-----------main_menu sys call ------------
+if len(sys.argv) > 1:
+    try:
+        numMine = int(sys.argv[1])
+        # ---------- Program entry point ----------
+        print(f"gameloop start... \nNumber of Mines = {numMine}")  # Debug print to console
+
+        # 1. Create bomb grid (10x10 with bombs randomly placed)
+        raw_grid = BoardGenerator.generate_bombs(numMine)
+
+        #-> Prints raw_grid
+        print("Heres raw_grid:")
+        BoardGenerator.print_grid(raw_grid)
+    
+        # 2. Convert raw grid into Grid objects
+        grid = [[Grid(x, y, "b" if raw_grid[y][x] == 'b' else int(raw_grid[y][x])) for x in range(grid_width)] for y in range(grid_height)]
+        mines = [(x, y) for y in range(grid_height) for x in range(grid_width) if raw_grid[y][x] == 'b']
+
+        # 3. Starts gameloop with grid and mines objects
+        gameLoop(grid, mines)  # Call main game loop if valid input in main menu entered
+        
+    except ValueError:
+        numMine = 10  # fallback to 10 if bad input detected
+        gameDisplay.fill((192, 192, 192))  # Shows clear screen with background gray
+        drawText("Non-integer detected,", 30, -80)
+        drawText("provide integer only input", 30, -40)
+        pygame.display.update()
+        pygame.time.delay(5000)  # pause for 5 seconds so user can read it
 
 # ---------- Cleanup when program ends ----------
 pygame.quit()  #Uninitializes all pygame modules

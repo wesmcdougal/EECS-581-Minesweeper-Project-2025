@@ -23,7 +23,6 @@ def generate_bombs(bombCount):
 
     return grid
 
-
 #-------generate the numbers that
 def generate_numbering(grid):
     for i in range(len(grid)):
@@ -49,10 +48,10 @@ def generate_numbering(grid):
 def generate_statusGrid(grid):
     pass
 
-
-grid = generate_bombs(10)
-print("Grid with bombs:")
-print_grid(grid)
-generate_numbering(grid)
-print("\nGrid with numbering:")
-print_grid(grid)
+#calling this here would be different than whats being called in Minesweeper.py
+# grid = generate_bombs(10)
+# print("Grid with starting bombs:")
+# print_grid(grid)
+# generate_numbering(grid)
+# print("\nGrid with numbering after bomb:")
+# print_grid(grid)
