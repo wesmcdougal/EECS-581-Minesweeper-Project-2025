@@ -43,6 +43,7 @@ def generate_numbering(grid):
                             # Only increment if the adjacent cell is not a bomb
                             if grid[ni][nj] != 'b':
                                 grid[ni][nj] += 1
+    return grid
 
 
 def generate_statusGrid(grid):
