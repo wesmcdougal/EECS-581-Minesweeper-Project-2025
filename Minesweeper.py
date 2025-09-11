@@ -152,15 +152,39 @@ class MineSweeper:
        pass 
     
     def reveal_neighbors(self, x, y):
-        for dy in [-1, 0, 1]:
-            for dx in [-1, 0, 1]:
-                nx, ny = x + dx, y + dy
-                if 0 <= nx < grid_width and 0 <= ny < grid_height:
-                    neighbor = self.grid[ny][nx]
-                    if not neighbor.clicked and not neighbor.flag:
-                        result = neighbor.reveal()
-                        if result == "empty":
-                            self.reveal_neighbors(nx, ny)
+        queue = [(x, y)]
+        visited = set()
+        
+        while queue:
+            cx, cy = queue.pop(0)  # Process current cell
+            
+            # Skip if already processed
+            if (cx, cy) in visited:
+                continue
+            visited.add((cx, cy))
+            
+            # Check all 8 neighbors
+            for dy in [-1, 0, 1]:
+                for dx in [-1, 0, 1]:
+                    # Skip the center cell (current cell)
+                    if dx == 0 and dy == 0:
+                        continue
+                        
+                    nx, ny = cx + dx, cy + dy
+                    
+                    # Check bounds and if already visited
+                    if (0 <= nx < grid_width and 0 <= ny < grid_height and 
+                        (nx, ny) not in visited):
+                        
+                        neighbor = self.grid[ny][nx]
+                        
+                        # Only reveal unclicked, unflagged cells
+                        if not neighbor.clicked and not neighbor.flag:
+                            result = neighbor.reveal()
+                            
+                            # If empty, add to queue for further processing
+                            if result == "empty":
+                                queue.append((nx, ny))
 
     def check_win(self):
         for row in self.grid:
