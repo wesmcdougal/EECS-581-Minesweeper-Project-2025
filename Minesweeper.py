@@ -95,6 +95,17 @@ class MineSweeper:
                         pygame.quit()
                         sys.exit()
 
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        mouse_pos = pygame.mouse.get_pos()
+                        for row in self.grid:
+                            for cell in row:
+                                if cell.rect.collidepoint(mouse_pos): #If mouse click is within cell
+                                    if event.button == 1:  #Left click
+                                        if not cell.flag: #Only allow cell to be revealed if not flagged
+                                            cell.clicked = True #Reveal cell
+                                    elif event.button == 3:  #Right click
+                                        cell.toggleFlag() #Place flag
+
                 # Draw grid
                 #Create off-screen frame buffer
                 frame_surface = pygame.Surface((app_width, app_height))
