@@ -41,6 +41,9 @@ class MineSweeper:
         #track if grid has been generated
         self.initialized = False
 
+        #flag to track first click 
+        self.first_click = True
+
     # ---------- Utility function ----------
     def drawText(self, txt, s, yOff=0):
         """
@@ -101,7 +104,30 @@ class MineSweeper:
                             for cell in row:
                                 if cell.rect.collidepoint(mouse_pos): #If mouse click is within cell
                                     if event.button == 1:  #Left click
-                                        cell.clicked = True #Reveal cell
+                                        if self.first_click:
+                                            self.first_click = False
+                                            result = cell.reveal()
+                                            # If it's a mine, just reveal it but don't end the game
+                                            if result == "mine":
+                                                cell.mineClicked = True  # Optional: mark visually
+                                                result = None  # Prevent game over
+                                        else:
+                                            result = cell.reveal()
+                                            if result == "mine":
+                                                # Game over: player clicked on a mine
+                                                self.game_over = True
+                                                self.game_win = False
+                                                # Reveal all mines
+                                                for mx, my in self.mines:
+                                                    self.grid[my][mx].clicked = True
+                                        # If the cell is empty, recursively reveal neighbors
+                                        if result == "empty":
+                                            self.reveal_neighbors(cell.xGrid, cell.yGrid)
+
+                                        # Check for win
+                                        if self.check_win():
+                                            self.game_over = True
+                                            self.game_win = True
                                     elif event.button == 3:  #Right click
                                         cell.toggleFlag() #Place flag
 
@@ -124,3 +150,21 @@ class MineSweeper:
 
     def gameLoop(self, grid, mines):
        pass 
+    
+    def reveal_neighbors(self, x, y):
+        for dy in [-1, 0, 1]:
+            for dx in [-1, 0, 1]:
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < grid_width and 0 <= ny < grid_height:
+                    neighbor = self.grid[ny][nx]
+                    if not neighbor.clicked and not neighbor.flag:
+                        result = neighbor.reveal()
+                        if result == "empty":
+                            self.reveal_neighbors(nx, ny)
+
+    def check_win(self):
+        for row in self.grid:
+            for cell in row:
+                if cell.val != "b" and not cell.clicked:
+                    return False
+        return True

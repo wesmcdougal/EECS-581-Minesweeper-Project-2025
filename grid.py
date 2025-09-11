@@ -65,7 +65,23 @@ class Grid:
                     surface.blit(sprite_flag, self.rect)
                 else:
                     surface.blit(sprite_grid, self.rect)
-                    
-     def toggleFlag(self): #Add flag toggle method
-        if not self.clicked:
-            self.flag = not self.flag
+
+    #Add flag toggle method           
+    def toggleFlag(self): 
+       if not self.clicked:
+           self.flag = not self.flag
+
+    def reveal(self):
+        """Reveal this tile and return its type."""
+        if self.clicked or self.flag:
+            return None  # Do nothing if already clicked or flagged
+
+        self.clicked = True
+
+        if self.val == "b":
+            self.mineClicked = True
+            return "mine"
+        elif self.val == 0:
+            return "empty"
+        else:
+            return "number"
