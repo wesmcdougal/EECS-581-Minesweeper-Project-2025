@@ -1,2 +1,10 @@
-/__pycache__/*
-*/.DS_Store
+# Ignore everything by default
+*
+
+# Except Python files
+!*.py
+!*/
+
+# Keep ignoring these specific unwanted files
+__pycache__/
+.DS_Store
