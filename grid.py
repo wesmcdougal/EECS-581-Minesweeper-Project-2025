@@ -66,6 +66,6 @@ class Grid:
                 else:
                     surface.blit(sprite_grid, self.rect)
                     
-     def toggleFlag(self): #Add flag toggle method
+    def toggleFlag(self): #Add flag toggle method
         if not self.clicked:
             self.flag = not self.flag
