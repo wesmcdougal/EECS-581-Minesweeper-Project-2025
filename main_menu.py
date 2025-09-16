@@ -14,7 +14,6 @@ Creation Date: 9/2/2025
 
 import pygame
 import sys
-import subprocess # to open Minesweeper.py and give it the mine count
 
 class MainMenu:
     def __init__(self, gameStateManager):
@@ -50,16 +49,17 @@ class MainMenu:
         self.screen.fill(self.WHITE)
 
         # title
-        title_text = self.FONT.render("Minesweeper", True, self.BLACK)
+        large_font = pygame.font.SysFont("Calibri", 64, True)
+        title_text = large_font.render("Minesweeper", True, self.BLACK)
         self.screen.blit(title_text, (self.WIDTH//2 - title_text.get_width()//2, 30))
 
         # mine count label
         label_text = self.SMALL_FONT.render("Select Mine Count:", True, self.BLACK)
-        self.screen.blit(label_text, (self.WIDTH//2 - label_text.get_width()//2, self.HEIGHT//2 - 60))
+        self.screen.blit(label_text, (self.WIDTH//2 - label_text.get_width()//2, self.HEIGHT//2 - 50))
 
         # mine count display
         count_text = self.FONT.render(str(self.mine_count), True, self.BLUE)
-        self.screen.blit(count_text, (self.WIDTH//2 - count_text.get_width()//2, self.HEIGHT//2))
+        self.screen.blit(count_text, (self.WIDTH//2 - count_text.get_width()//2, self.HEIGHT//2 - 10))
 
         # minus button
         pygame.draw.rect(self.screen, self.GRAY, self.minus_button)
