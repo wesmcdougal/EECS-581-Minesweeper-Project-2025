@@ -23,6 +23,11 @@ class Game:
         #store all possible states
         self.states = {"main_menu": self.mainMenu}
 
+        # start with menu’s dimensions
+        self.screen = pygame.display.set_mode(
+            (self.mainMenu.WIDTH, self.mainMenu.HEIGHT)
+        )
+
     def run(self):
         while True:
             # if users quits 
@@ -34,7 +39,16 @@ class Game:
             #run the current state
             state = self.gameStateManager.getState()
 
-            if state == "mine_sweeper":
+                        # resize window if needed
+            if state == "main_menu":
+                current = self.states["main_menu"]
+                if self.screen.get_size() != (current.WIDTH, current.HEIGHT):
+                    self.screen = pygame.display.set_mode(
+                        (current.WIDTH, current.HEIGHT)
+                    )
+                current.run()
+
+            elif state == "mine_sweeper":
                 MineSweeper(self.gameStateManager).run()  # new instance each time
             else:
                 self.states[self.gameStateManager.getState()].run()
