@@ -3,12 +3,12 @@ Main file for the Minesweeper game
 Handles game initialization, main loop, and state transitions
 '''
 
-WIDTH, HEIGHT = 400, 300
 import pygame
 import sys
 from gamestate_manager import GameStateManager
 from main_menu import MainMenu
 from Minesweeper import MineSweeper
+WIDTH, HEIGHT = 400, 300
 
 # Start point of the game
 class Game:
