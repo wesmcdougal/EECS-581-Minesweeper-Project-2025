@@ -1,50 +1,59 @@
-# how to install pygames - https://www.geeksforgeeks.org/installation-guide/how-to-install-pygame-in-windows/
-# Pygames documentation - https://www.pygame.org/docs/
-#                         https://coderslegacy.com/python/python-pygame-tutorial/
+'''
+Minesweeper Game using Pygame
+How to install pygames - https://www.geeksforgeeks.org/installation-guide/how-to-install-pygame-in-windows/
+Pygames documentation - https://www.pygame.org/docs/
+Pygames Tutorial - https://coderslegacy.com/python/python-pygame-tutorial/
+'''
 
-import pygame           # Imports pygame library
-import sys              #Imports sys library
-import BoardGenerator   #Imports BoardGenerator
+import pygame
+import sys 
+import BoardGenerator
+
 from grid import Grid
 
-# ---------- RGB variables ----------
-black = (0, 0, 0)          # Black color
-white = (255, 255, 255)    # White color
-blue = (0, 0, 255)         # Blue color
+# RGB variables
+black = (0, 0, 0)
+white = (255, 255, 255)
+blue = (0, 0, 255)
 
-# ---------- App window ----------
-grid_width = 10   # Number of grid columns (width)
-grid_height = 10  # Number of grid rows (height)
-grid_size = 32        # Size of each grid square in pixels
-border = 16           # General border size (left, right, bottom)
-top_border = 80      # Top border size for menu/spacing
-app_width = grid_size * grid_width + border * 2  # App window width in pixels
-app_height = grid_size * grid_height + border + top_border  # App window height in pixels
+# App window sizing configuration (in pixels)
+grid_width = 10
+grid_height = 10
+grid_size = 32
+border = 16
+top_border = 80
+app_width = grid_size * grid_width + border * 2
+app_height = grid_size * grid_height + border + top_border
 
-# ---------- Game loop (to be implemented) ----------
-bg_color = (192, 192, 192) # Background gray color
-grid_color = (128, 128, 128) # Grid line gray color
+# Coloring for background and grid lines
+bg_color = (192, 192, 192)
+grid_color = (128, 128, 128)
 
+
+# Main Minesweeper class
 class MineSweeper:
     def __init__(self, gameStateManager):
         pygame.init()
+        
         # Creates main pygame window
         self.gameDisplay = pygame.display.set_mode((app_width, app_height))
 
-        self.clock = pygame.time.Clock()  # control FPS
+        # Control framerate
+        self.clock = pygame.time.Clock()  
         
-        #set game state manager
+        # Set game state manager
         self.gameStateManager = gameStateManager
+
+        # Set window title to "Minesweeper"
+        pygame.display.set_caption("Minesweeper") 
         
-        pygame.display.set_caption("Minesweeper")  # Set window title to "Minesweeper"
-        
-        #track if grid has been generated
+        # Track if grid has been generated
         self.initialized = False
 
-        #flag to track first click 
+        # Flag to track first click 
         self.first_click = True
 
-        # ---------- HUD Assets ----------
+        # HUD Assets
         self.flag_icon = pygame.image.load("sprites/flag.png")
         self.retry_icon = pygame.image.load("sprites/retry.png")
         self.quit_icon = pygame.image.load("sprites/quit.png")
@@ -62,15 +71,18 @@ class MineSweeper:
 
         # Track game state text
         self.game_status = "Playing"
-    
+
+
+    # Draw Heads-Up Display (HUD) with flag count, retry, quit, and game status
     def draw_hud(self, surface):
-        # Draw flag icon + remaining flag count
+        
+        # Draw flag icon and remaining flag count
         surface.blit(self.flag_icon, self.flag_rect.topleft)
 
         # Count how many flags are currently placed on the board
         flags_placed = sum(cell.flag for row in self.grid for cell in row)
 
-        # Calculate remaining flags available to place
+        # Calculate and display remaining flags available to place
         remaining_flags = len(self.mines) - flags_placed
 
         font = pygame.font.SysFont("Calibri", 24, True)
@@ -96,62 +108,71 @@ class MineSweeper:
         status_text = font.render(self.game_status, True, status_color)
         surface.blit(status_text, (app_width - status_text.get_width() - border, border + 15))
 
-    # ---------- Utility function ----------
+    
+    # Utility function to draw centered text
     def drawText(self, txt, s, yOff=0):
-        """
-        Draws text centered on the game screen.
-        txt  = text string
-        s    = font size
-        yOff = vertical offset for placement
-        """
-        screen_text = pygame.font.SysFont("Calibri", s, True).render(txt, True, blue)  # Creates a font surface Object
+        
+        # Draws text centered on the game screen.
+        #txt  = text string
+        #s    = font size
+        #yOff = vertical offset for placement
+    
+        screen_text = pygame.font.SysFont("Calibri", s, True).render(txt, True, blue)  # Creates a font surface object
         rect = screen_text.get_rect()  # Get rectangle boundary of text
+        
         # Center text in the grid area with vertical offset
         rect.center = (grid_width * grid_size / 2 + border, 
                     grid_height * grid_size / 2 + top_border + yOff)
+        
         self.gameDisplay.blit(screen_text, rect)  # Draws text to screen
-    
+
+
+    # Initialize minesweeper game state
     def initialize_minesweeper(self):
-        # get number of mines from state manager
+        
+        # Get number of mines from state manager
         params = self.gameStateManager.getParams()
-        #set to 10 if param set to num
+        # Set to 10 if param set to num
         numMine = params.get("numMine", 10)
 
-        # ---------- Program entry point ----------
+        # Program entry point
         #print(f"gameloop start... \nNumber of Mines = {numMine}")  # Debug print to console
 
         # 1. Create bomb grid (10x10 with bombs randomly placed)
         raw_grid = BoardGenerator.generate_bombs(numMine)
-        #2. Create numbering for adjacent mines
+        # 2. Create numbering for adjacent mines
         raw_grid = BoardGenerator.generate_numbering(raw_grid)
 
         # #-> Prints raw_grid
         # print("Heres raw_grid:")
         # BoardGenerator.print_grid(raw_grid)
     
-        # 2. Convert raw grid into Grid objects
+        # 3. Convert raw grid into Grid objects
         self.grid = [[Grid(x, y, "b" if raw_grid[y][x] == 'b' else int(raw_grid[y][x]), self.gameDisplay, border, top_border, grid_size) for x in range(grid_width)] for y in range(grid_height)]
         self.mines = [(x, y) for y in range(grid_height) for x in range(grid_width) if raw_grid[y][x] == 'b']
 
+        # 4. Initialize game status variables
         self.game_win = False
         self.game_over = False
         
         self.initialized = True
 
+
+    # Main game loop
     def run(self):
             if not self.initialized:
                 self.initialize_minesweeper()
 
             while not self.game_over:
-                #handle events
+                # Handle game events
                 for event in pygame.event.get():
-
-                    #for debug purposes only!!!! press w to win
+                    # For debug purposes only -- press "W" to win
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_w:  # Press "W" to trigger a win
                             self.game_over = True
                             self.game_win = True
                             self.game_status = "Win"
+                            
                             # Optionally reveal all cells
                             for row in self.grid:
                                 for cell in row:
@@ -166,13 +187,15 @@ class MineSweeper:
 
                         # HUD interactions first
                         if self.retry_rect.collidepoint(mouse_pos):
-                            self.initialized = False  # reset
+                            self.initialized = False  # Reset
                             self.first_click = True
-                            self.run()  # restart game
+                            self.run()  # Restart game
                             return
+                            
                         elif self.quit_rect.collidepoint(mouse_pos):
                             self.gameStateManager.setState("main_menu")
                             return
+                            
                         for row in self.grid:
                             for cell in row:
                                 if cell.rect.collidepoint(mouse_pos): #If mouse click is within cell
@@ -180,20 +203,24 @@ class MineSweeper:
                                         if self.first_click:
                                             self.first_click = False
                                             result = cell.reveal()
+                                            
                                             # If it's a mine, just reveal it but don't end the game
                                             if result == "mine":
                                                 cell.mineClicked = True  # Optional: mark visually
                                                 result = None  # Prevent game over
                                         else:
                                             result = cell.reveal()
+                                            
                                             if result == "mine":
                                                 # Game over: player clicked on a mine
                                                 self.game_over = True
                                                 self.game_win = False
                                                 self.game_status = "Loss"
+                                                
                                                 # Reveal all mines
                                                 for mx, my in self.mines:
                                                     self.grid[my][mx].clicked = True
+                                                    
                                         # If the cell is empty, recursively reveal neighbors
                                         if result == "empty":
                                             self.reveal_neighbors(cell.xGrid, cell.yGrid)
@@ -203,21 +230,22 @@ class MineSweeper:
                                             self.game_over = True
                                             self.game_win = True
                                             self.game_status = "Win"
-                                    elif event.button == 3:  #Right click
-                                        cell.toggleFlag() #Place flag
+                                            
+                                    # Right click to place a flag
+                                    elif event.button == 3:  
+                                        cell.toggleFlag()
 
-                # Draw grid
-                #Create off-screen frame buffer
+                # Draw grid, create off-screen frame buffer
                 frame_surface = pygame.Surface((app_width, app_height))
-                frame_surface.fill((192, 192, 192))  # background
+                frame_surface.fill((192, 192, 192))  # Background
+                
                 for row in self.grid:
                     for cell in row:
                         cell.drawGrid(frame_surface)
 
                 self.draw_hud(frame_surface)
-                #Blit buffer to main display
-                self.gameDisplay.blit(frame_surface, (0,0))
-                pygame.display.flip()  # flip once per frame
+                self.gameDisplay.blit(frame_surface, (0,0)) # Blit buffer to main display
+                pygame.display.flip()  # Flip once per frame
                 self.clock.tick(30)
 
             # Wait for user input to restart or quit
@@ -227,6 +255,7 @@ class MineSweeper:
                     if event.type == pygame.QUIT:
                         pygame.quit()
                         sys.exit()
+                        
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         mouse_pos = pygame.mouse.get_pos()
                         if self.retry_rect.collidepoint(mouse_pos):
@@ -235,10 +264,13 @@ class MineSweeper:
                             self.game_status = "Playing"
                             self.run()  # Restart game
                             waiting = False
+                            
                         elif self.quit_rect.collidepoint(mouse_pos):
                             self.gameStateManager.setState("main_menu")
                             waiting = False
-    
+
+
+    # Function for revealing neighboring cells when an empty cell is clicked
     def reveal_neighbors(self, x, y):
         queue = [(x, y)]
         visited = set()
@@ -274,6 +306,8 @@ class MineSweeper:
                             if result == "empty":
                                 queue.append((nx, ny))
 
+
+    # Check if all non-mine cells are revealed
     def check_win(self):
         for row in self.grid:
             for cell in row:
