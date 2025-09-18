@@ -49,15 +49,3 @@ def generate_numbering(grid):
                             if grid[ni][nj] != 'b':
                                 grid[ni][nj] += 1
     return grid
-
-
-def generate_statusGrid(grid):
-    pass
-
-#calling this here would be different than whats being called in Minesweeper.py
-# grid = generate_bombs(10)
-# print("Grid with starting bombs:")
-# print_grid(grid)
-# generate_numbering(grid)
-# print("\nGrid with numbering after bomb:")
-# print_grid(grid)
