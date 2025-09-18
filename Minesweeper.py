@@ -27,6 +27,10 @@ grid_color = (128, 128, 128) # Grid line gray color
 
 class MineSweeper:
     def __init__(self, gameStateManager):
+        '''
+        Takes in a gameStateManagers object and inializes the window that the board
+        which the board will be drawn on
+        '''
         pygame.init()
         # Creates main pygame window
         self.gameDisplay = pygame.display.set_mode((app_width, app_height))
@@ -64,6 +68,10 @@ class MineSweeper:
         self.game_status = "Playing"
     
     def draw_hud(self, surface):
+        '''
+        Draws the hud elements flags left, retry, back to menu, 
+        and game status to the top of the provided surface
+        '''
         # Draw flag icon + remaining flag count
         surface.blit(self.flag_icon, self.flag_rect.topleft)
 
@@ -112,6 +120,11 @@ class MineSweeper:
         self.gameDisplay.blit(screen_text, rect)  # Draws text to screen
     
     def initialize_minesweeper(self, safe_row=None, safe_col=None):
+        '''
+        Takes in safe_row and safe_col (both optional) that should be garanted to be empty
+        and generated a grid will the specified amount of bombs. It then numbers the approximate
+        mine count and converts the grid into sprite objects.
+        '''
         # get number of mines from state manager
         params = self.gameStateManager.getParams()
         #set to 10 if param set to num
@@ -139,6 +152,10 @@ class MineSweeper:
         self.initialized = True
 
     def run(self):
+            '''
+            Initializes the board and handls player input (clicks, flags, quits), 
+            updats the grid, checks win/loss conditions, and redraws the screen each frame
+            '''
             if not self.initialized:
                 self.initialize_minesweeper()
 
@@ -223,7 +240,7 @@ class MineSweeper:
                 pygame.display.flip()  # flip once per frame
                 self.clock.tick(30)
 
-            # Wait for user input to restart or quit
+            # Wait for user input to restart or quit to menu
             waiting = True
             while waiting:
                 for event in pygame.event.get():
@@ -243,6 +260,10 @@ class MineSweeper:
                             waiting = False
     
     def reveal_neighbors(self, x, y):
+        '''
+        Goes through the board and reveals empty
+        spaces attached to a clicked empty space
+        '''
         queue = [(x, y)]
         visited = set()
         
@@ -278,6 +299,10 @@ class MineSweeper:
                                 queue.append((nx, ny))
 
     def check_win(self):
+        '''
+        Iterate through the grid and checks if a 
+        cell is not a bomb and has not been clicked.
+        '''
         for row in self.grid:
             for cell in row:
                 if cell.val != "b" and not cell.clicked:
