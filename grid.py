@@ -17,6 +17,9 @@ sprite_mineFalse = pygame.image.load("Sprites/mineFalse.png")      # Wrongly fla
 
 class Grid:
     def __init__(self, xGrid, yGrid, type, gameDisplay, border, top_border, grid_size,):
+        '''
+        Initialize the grid with provided parameters
+        '''
         self.xGrid = xGrid
         self.yGrid = yGrid
         self.clicked = False
@@ -32,6 +35,10 @@ class Grid:
 
     #draws the sprites onto grid after every click/interaction update
     def drawGrid(self, surface):
+        '''
+        Assignes each value in the grid to its appropriate sprite
+        and draws them on the provided surface.
+        '''
         if self.mineFalse:
             surface.blit(sprite_mineFalse, self.rect)
         else:
@@ -72,7 +79,9 @@ class Grid:
            self.flag = not self.flag
 
     def reveal(self):
-        """Reveal this tile and return its type."""
+        '''
+        Reveal this tile and return its type.
+        '''
         if self.clicked or self.flag:
             return None  # Do nothing if already clicked or flagged
 
