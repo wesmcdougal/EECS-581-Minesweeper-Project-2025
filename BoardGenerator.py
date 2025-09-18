@@ -12,8 +12,9 @@ def print_grid(grid):
 
 # Generate Bombs
 def generate_bombs(bombCount):
-
-    grid = [[0 for _ in range(10)] for _ in range(10)] # Create 10 by 10 grid
+    
+    # Create 10 by 10 grid
+    grid = [[0 for _ in range(10)] for _ in range(10)] 
     
     # Place bombs at random location on grid
     i = 0
