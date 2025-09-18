@@ -9,6 +9,10 @@ WIDTH, HEIGHT = 400, 300
 #this will be the start point of the game
 class Game:
     def __init__(self):
+        '''
+        Initialize a screen for the gameStateManager to use 
+        and set all state possibilites
+        '''
         pygame.init()
 
         #set screen
@@ -29,6 +33,11 @@ class Game:
         )
 
     def run(self):
+        '''
+        Gets the current state for GameStateManager and
+        switches state of the current game to the state
+        that is recieved (ie. switching from main menu to the game)
+        '''
         while True:
             # if users quits 
             for event in pygame.event.get():
@@ -39,7 +48,7 @@ class Game:
             #run the current state
             state = self.gameStateManager.getState()
 
-                        # resize window if needed
+            # resize window if needed
             if state == "main_menu":
                 current = self.states["main_menu"]
                 if self.screen.get_size() != (current.WIDTH, current.HEIGHT):

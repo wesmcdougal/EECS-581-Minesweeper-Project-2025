@@ -17,6 +17,9 @@ import sys
 
 class MainMenu:
     def __init__(self, gameStateManager):
+        '''
+        Initilizes main menu screen size and button/text positioning
+        '''
         pygame.init()
         self.gameStateManager = gameStateManager
 
@@ -46,6 +49,9 @@ class MainMenu:
         self.plus_button = pygame.Rect(self.WIDTH//2 + 30, self.HEIGHT//2 - 20, 40, 40)
 
     def draw_menu(self):
+        '''
+        Draws how the main menu looks ie. the increase/decrease buttons and tracking mine count
+        '''
         self.screen.fill(self.WHITE)
 
         # title
@@ -79,7 +85,12 @@ class MainMenu:
         pygame.display.flip()
 
 
-    def run(self): # draw how menu looks
+    def run(self): 
+        '''
+        Executes drawing the menu and handles user input
+        of increasing/decreasing mine count and
+        starting game (achived by updating state w/ GameStaeManager)
+        '''
         clock = pygame.time.Clock()
         while True:
             self.draw_menu()
