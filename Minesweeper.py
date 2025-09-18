@@ -111,7 +111,7 @@ class MineSweeper:
                     grid_height * grid_size / 2 + top_border + yOff)
         self.gameDisplay.blit(screen_text, rect)  # Draws text to screen
     
-    def initialize_minesweeper(self):
+    def initialize_minesweeper(self, safe_row=None, safe_col=None):
         # get number of mines from state manager
         params = self.gameStateManager.getParams()
         #set to 10 if param set to num
@@ -121,7 +121,7 @@ class MineSweeper:
         #print(f"gameloop start... \nNumber of Mines = {numMine}")  # Debug print to console
 
         # 1. Create bomb grid (10x10 with bombs randomly placed)
-        raw_grid = BoardGenerator.generate_bombs(numMine)
+        raw_grid = BoardGenerator.generate_bombs(numMine, safe_row, safe_col)
         #2. Create numbering for adjacent mines
         raw_grid = BoardGenerator.generate_numbering(raw_grid)
 
@@ -181,9 +181,12 @@ class MineSweeper:
                                             self.first_click = False
                                             result = cell.reveal()
                                             # If it's a mine, just reveal it but don't end the game
-                                            if result == "mine":
-                                                cell.mineClicked = True  # Optional: mark visually
-                                                result = None  # Prevent game over
+                                            if result != "empty":
+                                                #regenerate and make clicked area safe
+                                                self.initialize_minesweeper(cell.yGrid, cell.xGrid)
+                                                self.grid[cell.yGrid][cell.xGrid].clicked = True
+                                                if self.grid[cell.yGrid][cell.xGrid]:
+                                                    self.reveal_neighbors(cell.xGrid, cell.yGrid)
                                         else:
                                             result = cell.reveal()
                                             if result == "mine":

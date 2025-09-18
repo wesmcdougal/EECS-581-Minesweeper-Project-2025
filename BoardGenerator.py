@@ -5,7 +5,7 @@ def print_grid(grid):
         print(i)
 
 # ---------Generate Bombs----------
-def generate_bombs(bombCount):
+def generate_bombs(bombCount, safe_row=None, safe_col=None):
     #create 10 by 10 grid
     grid = [[0 for _ in range(10)] for _ in range(10)]
     
@@ -15,7 +15,12 @@ def generate_bombs(bombCount):
         placement = random.randint(0,99)
         row = placement//10
         column = placement%10
-        
+
+        #if a safe row and col are specified all blocks within a one block radius should be safe from bombs
+        if safe_row and safe_col:
+            if abs(row - safe_row) <= 1 and abs(column - safe_col) <= 1:
+                continue
+
         #if current placement is not a bomb
         if grid[row][column] != 'b':
             grid[row][column] = 'b'
