@@ -1,5 +1,7 @@
-# this will manage which page the game is currently 
-#i.e if its on the minesweeper or main menu
+'''
+File for game state management (e.g., main menu, playing, game over)
+'''
+
 class GameStateManager():
     def __init__(self, currentState):
         self.currentState = currentState
