@@ -16,8 +16,10 @@ blue = (0, 0, 255)         # Blue color
 grid_width = 10   # Number of grid columns (width)
 grid_height = 10  # Number of grid rows (height)
 grid_size = 32        # Size of each grid square in pixels
-border = 16           # General border size (left, right, bottom)
-top_border = 80      # Top border size for menu/spacing
+border = 30          # General border size (left, right, bottom)
+top_border = 90      # Top border size for menu/spacing
+grid_offset_x = 5  # move the grid placement x-axis 0 means center on x axis
+grid_offset_y = 10  # move the grid placement y-axis 0 means center on y axis
 app_width = grid_size * grid_width + border * 2  # App window width in pixels
 app_height = grid_size * grid_height + border + top_border  # App window height in pixels
 
@@ -60,9 +62,9 @@ class MineSweeper:
         self.quit_icon = pygame.transform.scale(self.quit_icon, (icon_size, icon_size))
 
         # Rects for interaction
-        self.flag_rect = self.flag_icon.get_rect(topleft=(border, border))
-        self.retry_rect = self.retry_icon.get_rect(topleft=(border + 120, border))
-        self.quit_rect = self.quit_icon.get_rect(topleft=(border + 180, border))
+        self.flag_rect = self.flag_icon.get_rect(topleft=(border, border-20))
+        self.retry_rect = self.retry_icon.get_rect(topleft=(border + 120, border-20))
+        self.quit_rect = self.quit_icon.get_rect(topleft=(border + 180, border-20))
 
         # Track game state text
         self.game_status = "Playing"
@@ -102,7 +104,7 @@ class MineSweeper:
 
         # Draw game state (Playing, Win, Loss)
         status_text = font.render(self.game_status, True, status_color)
-        surface.blit(status_text, (app_width - status_text.get_width() - border, border + 15))
+        surface.blit(status_text, (app_width - status_text.get_width() - border, border - 10))
 
     # ---------- Utility function ----------
     def drawText(self, txt, s, yOff=0):
@@ -118,6 +120,33 @@ class MineSweeper:
         rect.center = (grid_width * grid_size / 2 + border, 
                     grid_height * grid_size / 2 + top_border + yOff)
         self.gameDisplay.blit(screen_text, rect)  # Draws text to screen
+
+    def draw_labels(self, surface):
+        '''
+        Draws column letters (A-J) and row numbers (1-10) around the grid
+        '''
+        font = pygame.font.SysFont("Calibri", 20, True)
+        padding = 25
+        #Create th txt for column
+        for col in range(grid_width):
+            # increment the column letter decimal value by 1 
+            label = chr(ord('A') + col) 
+            text = font.render(label, True, black)
+
+
+            x = border + grid_offset_x + col * grid_size + grid_size // 2 - text.get_width() // 2
+            #position on top of the grid
+            y = top_border + grid_offset_y - 30
+            surface.blit(text, (x, y))#draw too screen
+
+        #Create th txt for row
+        for row in range(grid_height):
+            label = str(row + 1)
+            text = font.render(label, True, black)
+            #position to the left
+            x = border + grid_offset_x - padding
+            y = top_border + grid_offset_y + row * grid_size + grid_size // 2 - text.get_height() // 2
+            surface.blit(text, (x, y))#draw too screen
     
     def initialize_minesweeper(self, safe_row=None, safe_col=None):
         '''
@@ -143,13 +172,14 @@ class MineSweeper:
         # BoardGenerator.print_grid(raw_grid)
     
         # 2. Convert raw grid into Grid objects
-        self.grid = [[Grid(x, y, "b" if raw_grid[y][x] == 'b' else int(raw_grid[y][x]), self.gameDisplay, border, top_border, grid_size) for x in range(grid_width)] for y in range(grid_height)]
+        self.grid = [[Grid(x, y, "b" if raw_grid[y][x] == 'b' else int(raw_grid[y][x]), self.gameDisplay, border+grid_offset_x, top_border+grid_offset_y, grid_size) for x in range(grid_width)] for y in range(grid_height)]
         self.mines = [(x, y) for y in range(grid_height) for x in range(grid_width) if raw_grid[y][x] == 'b']
 
         self.game_win = False
         self.game_over = False
         
         self.initialized = True
+
 
     def run(self):
             '''
@@ -233,6 +263,8 @@ class MineSweeper:
                 for row in self.grid:
                     for cell in row:
                         cell.drawGrid(frame_surface)
+               
+                self.draw_labels(frame_surface)                
 
                 self.draw_hud(frame_surface)
                 #Blit buffer to main display
